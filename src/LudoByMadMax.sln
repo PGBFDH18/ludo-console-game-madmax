@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudoByMadMax", "LudoByMadMax\LudoByMadMax.csproj", "{F5BA6B91-14FC-4CDD-B8CE-97ABA1AAFD27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "Engine\Engine.csproj", "{54AA2D91-9443-4864-95E5-7D524313ED40}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F5BA6B91-14FC-4CDD-B8CE-97ABA1AAFD27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5BA6B91-14FC-4CDD-B8CE-97ABA1AAFD27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5BA6B91-14FC-4CDD-B8CE-97ABA1AAFD27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5BA6B91-14FC-4CDD-B8CE-97ABA1AAFD27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54AA2D91-9443-4864-95E5-7D524313ED40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54AA2D91-9443-4864-95E5-7D524313ED40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54AA2D91-9443-4864-95E5-7D524313ED40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54AA2D91-9443-4864-95E5-7D524313ED40}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D7146869-C6D7-41A1-B8D2-B82396F5A542}
+	EndGlobalSection
+EndGlobal
