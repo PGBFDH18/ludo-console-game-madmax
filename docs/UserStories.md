@@ -1,3 +1,6 @@
+As a user I should select number of players; // Efter Jag läst mer om UserStories, verkar att de skulle ser ut så här. 
+As a user I should roll 6 sides dice;
+
 Slå 6 och "pjäsen" kommer ut.
 
 Flytta pjäsen det antal steg tärningen visar.
