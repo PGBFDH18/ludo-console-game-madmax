@@ -1,4 +1,5 @@
 As a user I should select number of players; 
+
 As a user I should roll 6 sides dice;
 
 Slå 6 och "pjäsen" kommer ut.
