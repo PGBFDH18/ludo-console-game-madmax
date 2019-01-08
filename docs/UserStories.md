@@ -8,6 +8,8 @@ Kunna använda 4 pjäser.
 
 Kunna spela mot 1-3 andra spelare.
 
+Spelarna ska kunna välja sitt namn och se andra spelares namn.
+
 Användare ska kunna rulla tärningen på sin tur.
 
 Kunna slå igen om man slår 6.
