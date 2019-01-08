@@ -688,23 +688,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\norde\\.nuget\\packages\\": {},
+    "C:\\Users\\Giss\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\OneDrive\\PLUGG\\Teknikhögskolan\\3 Webbutveckling backend\\Project 1\\src\\Engine\\Engine.csproj",
+      "projectUniqueName": "C:\\Users\\Giss\\Documents\\GitHub\\ludo-console-game-madmax\\src\\Engine\\Engine.csproj",
       "projectName": "Engine",
-      "projectPath": "D:\\OneDrive\\PLUGG\\Teknikhögskolan\\3 Webbutveckling backend\\Project 1\\src\\Engine\\Engine.csproj",
-      "packagesPath": "C:\\Users\\norde\\.nuget\\packages\\",
-      "outputPath": "D:\\OneDrive\\PLUGG\\Teknikhögskolan\\3 Webbutveckling backend\\Project 1\\src\\Engine\\obj\\",
+      "projectPath": "C:\\Users\\Giss\\Documents\\GitHub\\ludo-console-game-madmax\\src\\Engine\\Engine.csproj",
+      "packagesPath": "C:\\Users\\Giss\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Giss\\Documents\\GitHub\\ludo-console-game-madmax\\src\\Engine\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\norde\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Giss\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

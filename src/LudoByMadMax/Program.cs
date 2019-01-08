@@ -6,7 +6,7 @@ namespace LudoByMadMax
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Her we go");
         }
     }
 }
