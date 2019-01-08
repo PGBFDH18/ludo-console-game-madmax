@@ -1,9 +1,11 @@
-Slå 6 och "pjäsen" kommer ut.
+SlÃ¥ 6 och "pjÃ¤sen" kommer ut.
 
-Flytta pjäsen det antal steg tärningen visar.
+Flytta pjÃ¤sen det antal steg tÃ¤rningen visar.
 
-"Gå ut" på jämnt slagen siffra.
+"GÃ¥ ut" pÃ¥ jÃ¤mnt slagen siffra.
 
-Kunna använda 4 pjäser.
+Kunna anvÃ¤nda 4 pjÃ¤ser.
 
 Kunna spela mot 1-3 andra spelare.
+
+Kunna avsluta spelet nÃ¤r fÃ¶rsta spelaren "gÃ¥tt ut" med sin sista pjÃ¤s.
