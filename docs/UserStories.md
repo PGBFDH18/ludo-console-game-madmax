@@ -10,6 +10,8 @@ Kunna spela mot 1-3 andra spelare.
 
 Användare ska kunna rulla tärningen på sin tur.
 
+Kunna slå igen om man slår 6.
+
 Spelarna ska veta vems tur det är.
 
 Kunna avsluta spelet när första spelaren "gått ut" med sin sista pjäs.
