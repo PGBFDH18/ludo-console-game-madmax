@@ -55,8 +55,8 @@ namespace LudoByMadMax
                     Console.WriteLine(players[i] + "! Hit a key to roll the die.");
                     Console.ReadKey();
                     Console.WriteLine("You got " + session.CurrentDieRoll + "!");
-                    Console.WriteLine("Pieces in base: " /**/);
-                    Console.WriteLine("Pieces out (piece/position): "/**/);
+                    Console.WriteLine("Pieces in nest: " + session.CurrentPiecesInBase);
+                    Console.WriteLine("Pieces out (piece/position): ");
                 }
             }
         }

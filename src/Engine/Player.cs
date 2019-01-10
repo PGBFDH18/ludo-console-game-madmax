@@ -4,37 +4,41 @@ namespace Engine
 {
     public class Player
     {
-        private static Random random = new Random();
+        const int BASE = -1; // Pjäsen är i basen
+        const int GOAL = -2; // Pjäsen har gått i mål
 
-        public string Name { get; set; }
-
-        private readonly int[] piecePositions = new int[] { -1, -1, -1, -1 };
-
-        public Player(string name)
-        {
-            Name = name;
-        }
+        private readonly int[] piecePositions = new int[] { BASE, BASE, BASE, BASE };
 
         public int GetPiecePosition(int piece)
             => piecePositions[piece];
 
-        public bool IsPieceInNest(int piece)
-            => piecePositions[piece] == -1;
+        public int GetPiecesInBase { get; private set; }
+
+        public bool IsPieceInBase(int piece)
+            => piecePositions[piece] == BASE;
+
+        public Player()
+        {
+            int pieceInBaseCount = 0;
+            foreach (var p in piecePositions)
+            {
+                if (p == BASE)
+                    pieceInBaseCount++;
+            }
+        }
         
         //public bool TryMovePiece(int piece, int distance)
         //{
             
         //}
 
-        public static int RollDice()
-            => random.Next(1, 7);
-
         public void MovePiece(int piece, int distance)
         {
 
         }
+
         // argument how to enter last stage "special winning area"
-        public void  EndGameCanEnter(int dice = 6, bool HomePosistion = true)
+        public void  EndGameCanEnter(int dice = 6, bool HomePosition = true)
         {   
  
         }
