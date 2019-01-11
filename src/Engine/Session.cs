@@ -5,7 +5,8 @@ using System.Text;
 namespace Engine
 {
     public class Session
-    {   
+    {
+        public bool sessionWon = false; 
         private readonly Random random = new Random();
         private readonly Player[] players;
 
@@ -25,7 +26,7 @@ namespace Engine
             var players = new Player[playerCount];
             for (int i = 0; i < players.Length; i++)
             {
-                players[i] = new Player();
+                players[i] = new Player(i);
             }
             return players;
         }
@@ -34,7 +35,7 @@ namespace Engine
         {
             CurrentPlayer = (CurrentPlayer + 1) % PlayerCount;
             CurrentDieRoll = RollDie();
-            CurrentPiecesInBase = players[CurrentPlayer].GetPiecesInBase;
+            CurrentPiecesInBase = players[CurrentPlayer].PiecesInBaseCount;
         }
 
         private int RollDie()
