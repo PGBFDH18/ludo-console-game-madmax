@@ -38,6 +38,7 @@ namespace Engine
                 if (p == BASE)
                     pieceInBaseCount++;
             }
+            GetPiecesInBase = pieceInBaseCount;
         }
 
         private readonly int playerIndex;
@@ -55,9 +56,8 @@ namespace Engine
         // argument how to enter last stage "special winning area"
         public void  EndGameCanEnter(int dice = 6, bool HomePosition = true)
         {   
- 
-        }
 
+        }
     }
 
 }
