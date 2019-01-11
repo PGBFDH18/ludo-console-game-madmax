@@ -35,7 +35,7 @@ namespace LudoByMadMax
 
             for (int i = 0; i < numOfPlayers; i++)
             {
-                Console.Write("Enter the name of Player " + (i++) + ": ");
+                Console.Write("Enter the name of Player " + (i + 1) + ": ");
                 string name = Console.ReadLine();
                 players[i] = name;
             }
@@ -56,7 +56,19 @@ namespace LudoByMadMax
                     Console.ReadKey();
                     Console.WriteLine("You got " + session.CurrentDieRoll + "!");
                     Console.WriteLine("Pieces in nest: " + session.CurrentPiecesInBase);
-                    Console.WriteLine("Pieces out (piece/position): ");
+                    Console.Write("Pieces out (piece/position): ");
+                    int piecesOut = 4 - session.CurrentPiecesInBase;
+                    if (piecesOut > 0)
+                    {
+                        for (int j = 0; j < piecesOut; j++)
+                        {
+                            Console.Write(j + 1 + "({0}), " /*GetPosition*/);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine(piecesOut);
+                    }
                 }
             }
         }
