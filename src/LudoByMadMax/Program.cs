@@ -1,5 +1,5 @@
 ﻿using System;
-using Engine;
+using MadEngine;
 using System.Collections.Generic;
 
 namespace LudoByMadMax
@@ -43,7 +43,7 @@ namespace LudoByMadMax
             Console.WriteLine("Great! Let's start.");
             Console.WriteLine();
 
-            var session = new Session(numOfPlayers);
+            var session = Ludo.NewGame(numOfPlayers);
             bool gameActive = true;
             Console.WriteLine(players[0] + " begins!");
             Console.WriteLine();
@@ -55,14 +55,17 @@ namespace LudoByMadMax
                     Console.WriteLine(players[i] + "! Hit a key to roll the die.");
                     Console.ReadKey();
                     Console.WriteLine("You got " + session.CurrentDieRoll + "!");
-                    Console.WriteLine("Pieces in nest: " + session.CurrentPiecesInBase);
+                    int piecesInBase = CountPiecesInBase(session);
+                    Console.WriteLine("Pieces in nest: " + piecesInBase);
                     Console.Write("Pieces out (piece/position): ");
-                    int piecesOut = 4 - session.CurrentPiecesInBase;
+                    int piecesOut = session.PieceCount - piecesInBase;
                     if (piecesOut > 0)
                     {
-                        for (int j = 0; j < piecesOut; j++)
+                        for (int j = 0; j < session.PieceCount; j++)
                         {
-                            Console.Write(j + 1 + "({0}), " /*GetPosition*/);
+                            var piece = session.GetPiece(j);
+                            if (!piece.IsInBase && !piece.IsInGoal)
+                                Console.Write(j + 1 + "({0}), ", piece.CurrentPosition);
                         }
                     }
                     else
@@ -71,6 +74,15 @@ namespace LudoByMadMax
                     }
                 }
             }
+        }
+
+        static int CountPiecesInBase(ISession session)
+        {
+            int count = 0;
+            for (int i = 0; i < session.PieceCount; ++i)
+                if (session.GetPiece(i).IsInBase)
+                    ++count;
+            return count;
         }
     }
 }

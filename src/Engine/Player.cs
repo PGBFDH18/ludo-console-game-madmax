@@ -38,7 +38,7 @@ namespace Engine
                 if (p == BASE)
                     pieceInBaseCount++;
             }
-            GetPiecesInBase = pieceInBaseCount;
+            //GetPiecesInBase = pieceInBaseCount;
         }
 
         private readonly int playerIndex;
