@@ -17,7 +17,7 @@ namespace MadEngine
         public bool CanMove => CurrentPosition != MovedPosition;
 
         // if this piece can move, and it is moved, will it collide with another piece? (otherwise NULL)
-        public CollisionInfo? MovedCollision { get; }
+        public PlayerPiece? MovedCollision { get; }
 
         // is this piece in its base?
         public bool IsInBase => CurrentDistance == 0;
@@ -45,7 +45,7 @@ namespace MadEngine
         }
 
         // constructor for piece that can move AND collides with another piece if it is moved.
-        public PieceInfo(int currentDistance, int currentPosition, int movedPosition, CollisionInfo movedCollision)
+        public PieceInfo(int currentDistance, int currentPosition, int movedPosition, PlayerPiece movedCollision)
         {
             CurrentDistance = (byte)currentDistance;
             CurrentPosition = (sbyte)currentPosition;

@@ -60,6 +60,20 @@ namespace MadEngine
                 NextMove();
         }
 
+        public int GetPiecePosition(int player, int piece)
+            => CalculatePosition(player, piece);
+
+        public PlayerPiece? LookAtBoard(int position)
+        {
+            // first check that the position is on the board and not in a collision-free zone:
+            if (position >= 0 && position < BoardInfo.Length)
+                for (int player = 0; player < PlayerCount; ++player) // loop over players...
+                    for (int piece = 0; piece < PIECE_COUNT; ++piece) // ...and their pieces...
+                        if (CalculatePosition(player, piece) == position)
+                            return new PlayerPiece(player, piece);
+            return null;
+        }
+
         // public uppåt...
         // private neråt...
 
@@ -105,30 +119,31 @@ namespace MadEngine
 
         private void CheckMoveCollision(int piece)
         {
-            if (currentPieces[piece].MovedCollision is CollisionInfo ci)
+            if (currentPieces[piece].MovedCollision is PlayerPiece ci)
             {
-                if (ci.TargetPlayer != CurrentPlayer)
+                if (ci.Player != CurrentPlayer)
                     KnockOut(ci);
             }
         }
 
-        private void KnockOut(CollisionInfo ci)
+        private void KnockOut(PlayerPiece ci)
         {
-            pieceDistance[ci.TargetPlayer, ci.TargetPiece] = 0;
+            pieceDistance[ci.Player, ci.Piece] = 0;
         }
 
-        private int CalculateBoardPosition(int player, int piece)
+        private int CalculatePosition(int player, int piece)
         {
             int distance = pieceDistance[player, piece];
-            if (distance == 0)
+            if (distance == 0 || distance == BoardInfo.GoalDistance)
             {
-                // piece is in base.
+                // piece is in base or in goal.
                 return SPECIAL_POSITION;
             }
             if (BoardInfo.IsInEndZone(distance))
             {
                 // we are in the collision-free end-zone, return distance as the position.
-                return distance;
+                //return distance;
+                return distance + player * BoardInfo.EndZoneLength;
             }
             else
             {
@@ -180,7 +195,7 @@ namespace MadEngine
                 {
                     int oldDistance = pieceDistance[CurrentPlayer, piece];
                     int newDistance = oldDistance + CurrentDieRoll;
-                    int oldPosition = CalculateBoardPosition(CurrentPlayer, piece);
+                    int oldPosition = CalculatePosition(CurrentPlayer, piece);
                     if (newDistance == BoardInfo.GoalDistance)
                     {
                         currentPieces[piece] = new PieceInfo(oldDistance, oldPosition, newDistance); // goal!
@@ -200,14 +215,14 @@ namespace MadEngine
                             return; // <--
                         }
                     }
-                    int newPosition = CalculateBoardPosition(CurrentPlayer, piece);
-                    if (FindCollisionTarget(newPosition) is CollisionInfo ci)
+                    int newPosition = CalculatePosition(CurrentPlayer, piece);
+                    if (LookAtBoard(newPosition) is PlayerPiece ci)
                     {
                         //^ the new position collides with something...
-                        if (ci.TargetPlayer == CurrentPlayer)
+                        if (ci.Player == CurrentPlayer)
                         {
                             //^ new position collides with one of our own pieces
-                            if (ci.TargetPiece == piece)
+                            if (ci.Piece == piece)
                             {
                                 //^ False alarm! Our piece is "colliding" with itself (ALLOW_GOAL_BOUNCING)
                                 currentPieces[piece] = new PieceInfo(oldDistance, oldPosition); // cant move...
@@ -254,10 +269,10 @@ namespace MadEngine
                 if (isBaseRoll)
                 {
                     int startPosition = BoardInfo.StartPosition(CurrentPlayer);
-                    if (FindCollisionTarget(startPosition) is CollisionInfo ci)
+                    if (LookAtBoard(startPosition) is PlayerPiece ci)
                     {
                         //^ another piece is occupying our startPosition...
-                        if (ci.TargetPlayer == CurrentPlayer)
+                        if (ci.Player == CurrentPlayer)
                         {
                             //^ we already have a piece on our startingPosition...
                             if (ALLOW_STACKING)
@@ -299,17 +314,6 @@ namespace MadEngine
 
         private bool IsPieceInBase(int piece)
             => pieceDistance[CurrentPlayer, piece] == 0;
-
-        private CollisionInfo? FindCollisionTarget(int position)
-        {
-            // first check that the position is on the board and not in a collision-free zone:
-            if (position >= 0 && position < BoardInfo.Length)
-                for (int player = 0; player < PlayerCount; ++player) // loop over players...
-                    for (int piece = 0; piece < PIECE_COUNT; ++piece) // ...and their pieces...
-                        if (CalculateBoardPosition(player, piece) == position)
-                            return new CollisionInfo(player, piece);
-            return null;
-        }
 
         // how far each piece has moved. [player, piece]
         private readonly int[,] pieceDistance;
