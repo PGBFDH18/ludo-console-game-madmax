@@ -1,16 +1,23 @@
 ﻿using System;
 
+/* See board positions at the bottom! */
+
 namespace MadEngine
 {
     public struct BoardInfo
     {
-        public BoardInfo(int boardLength = 40)
+        // ctor
+        public BoardInfo(int boardLength = 40) // boardLength must be a multiple of 8.
         {
             Length = boardLength;
         }
 
         // length of the shared track around the board (excluding the collision-free end-zones leading to the goal).
         public int Length { get; }
+
+        // width and height of the board (Size x Size) (useful for drawing a GUI)
+        public int Size
+            => Length / 4 + 1;
 
         // length of the collision-free end-zones leading to the goal. (includes the goal square)
         public int EndZoneLength
@@ -26,10 +33,40 @@ namespace MadEngine
 
         // what board position corresponds to the first end-zone position of player X.
         public int EndZonePosition(int player)
-            => Length + player * EndZoneLength + 1;
+            => Length + player * EndZoneLength;
 
-        // checks if the distance of a piece corresponds to one of the collision-free end-zones.
+        // checks if the distance of a piece corresponds to one of the collision-free end-zones (excluding goal).
         public bool IsInEndZone(int pieceDistance)
             => pieceDistance > Length && pieceDistance < GoalDistance;
     }
 }
+/*
+     * Standard Ludo Board:
+     * --------------------
+     * Length: 40
+     * Size: 11x11
+     * EndZoneLength: 5 (4 + Goal)
+     * Positions:
+
+▶▶▶▶                        08 ▶ 09 ▶ 10  ⇠ (P1)
+                            ▲    ↓    ▼
+▶▶▶▶                        07   45   11
+                            ▲    ↓    ▼
+▶▶▶▶                        06   46   12
+                            ▲    ↓    ▼
+▶▶▶▶    (P0)                05   47   13
+        ⇣                   ▲    ↓    ▼
+        00 ▶ 01 ▶ 02 ▶ 03 ▶ 04   48   14 ▶ 15 ▶ 16 ▶ 17 ▶ 18
+        ▲                        ↓                        ▼
+        39 → 40 → 41 → 42 → 43 → G ← 53 ← 52 ← 51 ← 50 ← 19
+        ▲                        ↑                        ▼
+        38 ◀ 37 ◀ 36 ◀ 35 ◀ 34   58   24 ◀ 23 ◀ 22 ◀ 21 ◀ 20
+                            ▲    ↑    ▼                   ⇡
+▶▶▶▶                        33   57   25                (P2)
+                            ▲    ↑    ▼
+▶▶▶▶                        32   56   26
+                            ▲    ↑    ▼
+▶▶▶▶                        31   55   27
+                            ▲    ↑    ▼
+▶▶▶▶                (P3) ⇢  30 ◀ 29 ◀ 28
+ */
