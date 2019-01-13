@@ -17,5 +17,12 @@ namespace MadEngine
 
             return new Session(playerCount, new BoardInfo(boardLength));
         }
+
+        // Loads a gamestate.
+        public static ISession LoadGame(LudoSave save)
+        {
+            // TODO: kontrollera att spar-data är giltig
+            return new Session(save);
+        }
     }
 }

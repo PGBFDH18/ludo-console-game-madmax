@@ -29,5 +29,8 @@ namespace MadEngine
         int GetPiecePosition(int player, int piece);
         // Get the piece at a board position [1 - BoardInfo.Length] (or NULL if position is empty).
         PlayerPiece? LookAtBoard(int position);
+
+        // Returns the current gamestate.
+        LudoSave GetSave();
     }
 }

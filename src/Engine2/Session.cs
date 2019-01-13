@@ -17,13 +17,24 @@ namespace MadEngine
         const bool ALLOW_BASE_EXIT_ON_ROLL_1 = false;
         const bool ALLOW_UNLIMITED_ROLL_6 = true; // 'false' not implemented
 
-        // ctor
+        // ctor (new game)
         internal Session(int playerCount, BoardInfo boardInfo)
         {
-            pieceDistance = new int[playerCount, PIECE_COUNT];
+            pieceDistances = new int[playerCount, PIECE_COUNT];
             currentPieces = new PieceInfo[PIECE_COUNT];
             BoardInfo = boardInfo;
             NextMove();
+        }
+
+        // ctor (load game)
+        internal Session(LudoSave save)
+        {
+            pieceDistances = save.pieceDistances;
+            currentPieces = new PieceInfo[PIECE_COUNT];
+            BoardInfo = new BoardInfo(save.BoardLength);
+            CurrentPlayer = save.CurrentPlayer;
+            CurrentDieRoll = save.CurrentDieRoll;
+            ComputePieceInfo();
         }
 
         public int CurrentPlayer { get; private set; } = -1;
@@ -33,7 +44,7 @@ namespace MadEngine
         public BoardInfo BoardInfo { get; }
 
         public int PlayerCount
-            => pieceDistance.Length / PIECE_COUNT;
+            => pieceDistances.Length / PIECE_COUNT;
 
         public int PieceCount
             => PIECE_COUNT;
@@ -74,6 +85,9 @@ namespace MadEngine
             return null;
         }
 
+        public LudoSave GetSave()
+            => new LudoSave(CurrentPlayer, CurrentDieRoll, BoardInfo.Length, pieceDistances);
+
         // public uppåt...
         // private neråt...
 
@@ -87,7 +101,7 @@ namespace MadEngine
 
         private void MoveBasePiece(int piece)
         {
-            pieceDistance[CurrentPlayer, piece] = 1;
+            pieceDistances[CurrentPlayer, piece] = 1;
             CheckMoveCollision(piece);
             if (BASE_EXIT_ON_6_GRANTS_MOVE_6) // om man går ut på 6 OCH flyttar 6 steg kan man få dubbla collisions...
             {
@@ -102,16 +116,16 @@ namespace MadEngine
 
         private void MoveBoardPiece(int piece)
         {
-            int distance = pieceDistance[CurrentPlayer, piece] + CurrentDieRoll;
+            int distance = pieceDistances[CurrentPlayer, piece] + CurrentDieRoll;
             if (distance == BoardInfo.GoalDistance) // Piece has reached the goal! (piece leaves play!)
             {
-                pieceDistance[CurrentPlayer, piece] = distance;
+                pieceDistances[CurrentPlayer, piece] = distance;
                 if (CheckVictoryCondition())
                     return; // <-- Game finished !!!
             }
             else if (distance > BoardInfo.GoalDistance) // Piece moved too far - it bounces back. (ALLOW_GOAL_BOUNCING)
             {
-                pieceDistance[CurrentPlayer, piece] = BoardInfo.GoalDistance * 2 - distance;
+                pieceDistances[CurrentPlayer, piece] = BoardInfo.GoalDistance * 2 - distance;
             }
             CheckMoveCollision(piece);
             NextMove();
@@ -128,12 +142,12 @@ namespace MadEngine
 
         private void KnockOut(PlayerPiece ci)
         {
-            pieceDistance[ci.Player, ci.Piece] = 0;
+            pieceDistances[ci.Player, ci.Piece] = 0;
         }
 
         private int CalculatePosition(int player, int piece)
         {
-            int distance = pieceDistance[player, piece];
+            int distance = pieceDistances[player, piece];
             if (distance == 0 || distance == BoardInfo.GoalDistance)
             {
                 // piece is in base or in goal.
@@ -183,7 +197,7 @@ namespace MadEngine
                 if (IsPieceInBase(piece)) // (distance == 0)
                 {
                     if (baseExitInfo == null) // räkna ut och cache'a värdet om det inte finns...
-                        CalculateBaseExitInfo();
+                        ComputeBaseExitInfo();
                     currentPieces[piece] = baseExitInfo.Value; // <-- använd cache'ade värdet.
                 }
                 else if (ALLOW_STACKING)
@@ -193,7 +207,7 @@ namespace MadEngine
                 }
                 else
                 {
-                    int oldDistance = pieceDistance[CurrentPlayer, piece];
+                    int oldDistance = pieceDistances[CurrentPlayer, piece];
                     int newDistance = oldDistance + CurrentDieRoll;
                     int oldPosition = CalculatePosition(CurrentPlayer, piece);
                     if (newDistance == BoardInfo.GoalDistance)
@@ -263,7 +277,7 @@ namespace MadEngine
                 }
             }
 
-            void CalculateBaseExitInfo()
+            void ComputeBaseExitInfo()
             {
                 bool isBaseRoll = CurrentDieRoll == 6 || (CurrentDieRoll == 1 && ALLOW_BASE_EXIT_ON_ROLL_1);
                 if (isBaseRoll)
@@ -313,10 +327,10 @@ namespace MadEngine
         }
 
         private bool IsPieceInBase(int piece)
-            => pieceDistance[CurrentPlayer, piece] == 0;
+            => pieceDistances[CurrentPlayer, piece] == 0;
 
         // how far each piece has moved. [player, piece]
-        private readonly int[,] pieceDistance;
+        private readonly int[,] pieceDistances;
         private readonly PieceInfo[] currentPieces;
         private readonly Random random = new Random();
     }
