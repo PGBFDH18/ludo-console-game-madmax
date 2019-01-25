@@ -4,7 +4,7 @@ namespace MadEngine
 {
     public struct PieceInfo
     {
-        // how far has this piece moved (from its base, or zero if it is currently in the base).
+        // how far this piece has moved along its player-relative path (from its base, or zero if it is currently in its base)
         public byte CurrentDistance { get; }
 
         // where is this piece on the board? (assuming it is not in base or goal, otherwise -1)
@@ -16,8 +16,8 @@ namespace MadEngine
         // can it move? (Engine sets this based on board state / all the rules of the game)
         public bool CanMove => CurrentPosition != MovedPosition;
 
-        // if this piece can move, and it is moved, will it collide with another piece? (otherwise NULL)
-        public PlayerPiece? MovedCollision { get; }
+        // if this piece were to move, would it collide with another piece? (otherwise NULL)
+        public PlayerPiece? Collision { get; }
 
         // is this piece in its base?
         public bool IsInBase => CurrentDistance == 0;
@@ -32,7 +32,16 @@ namespace MadEngine
             CurrentDistance = (byte)currentDistance;
             CurrentPosition = (sbyte)currentPosition;
             MovedPosition = (sbyte)currentPosition;
-            MovedCollision = null;
+            Collision = null;
+        }
+
+        // constructor for piece that cannot move because it is blocked.
+        public PieceInfo(int currentDistance, int currentPosition, PlayerPiece collision)
+        {
+            CurrentDistance = (byte)currentDistance;
+            CurrentPosition = (sbyte)currentPosition;
+            MovedPosition = (sbyte)currentPosition;
+            Collision = collision;
         }
 
         // constructor for piece that can move without colliding.
@@ -41,16 +50,16 @@ namespace MadEngine
             CurrentDistance = (byte)currentDistance;
             CurrentPosition = (sbyte)currentPosition;
             MovedPosition = (sbyte)movedPosition;
-            MovedCollision = null;
+            Collision = null;
         }
 
         // constructor for piece that can move AND collides with another piece if it is moved.
-        public PieceInfo(int currentDistance, int currentPosition, int movedPosition, PlayerPiece movedCollision)
+        public PieceInfo(int currentDistance, int currentPosition, int movedPosition, PlayerPiece collision)
         {
             CurrentDistance = (byte)currentDistance;
             CurrentPosition = (sbyte)currentPosition;
             MovedPosition = (sbyte)movedPosition;
-            MovedCollision = movedCollision;
+            Collision = collision;
         }
         #endregion
     }
