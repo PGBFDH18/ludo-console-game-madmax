@@ -13,7 +13,7 @@ namespace MadEngine
                 throw new ArgumentOutOfRangeException(nameof(playerCount));
             if (startingPlayer < -1 || startingPlayer >= playerCount)
                 throw new ArgumentOutOfRangeException(nameof(startingPlayer));
-            if (boardLength < 16 || boardLength > 100)
+            if (boardLength < 24 || boardLength > 100)
                 throw new ArgumentOutOfRangeException(nameof(boardLength));
             if (boardLength % 8 != 0)
                 throw new ArgumentException("Must be a multiple of 8.", nameof(boardLength));

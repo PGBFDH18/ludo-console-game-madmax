@@ -19,7 +19,7 @@ namespace MadEngine
         public int Size
             => Length / 4 + 1;
 
-        // length of the collision-free end-zones leading to the goal. (includes the goal square)
+        // length of the collision-free end-zones leading to the goal (goal square inclusive).
         public int EndZoneLength
             => Length / 8;
 
@@ -35,7 +35,7 @@ namespace MadEngine
         public int EndZonePosition(int player)
             => Length + player * EndZoneLength;
 
-        // checks if the distance of a piece corresponds to one of the collision-free end-zones (excluding goal).
+        // checks if the distance of a piece corresponds to one of the collision-free end-zones (goal square exclusive).
         public bool IsInEndZone(int pieceDistance)
             => pieceDistance > Length && pieceDistance < GoalDistance;
     }
@@ -69,4 +69,7 @@ namespace MadEngine
 ▶▶▶▶                        31   55   27
                             ▲    ↑    ▼
 ▶▶▶▶                (P3) ⇢  30 ◀ 29 ◀ 28
+
+    Remember that for P0, position 0 corresponds to distance 1,
+    since distance 0 corresponds to the base. Care not to mix them up!
  */
