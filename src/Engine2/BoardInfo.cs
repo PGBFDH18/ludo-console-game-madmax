@@ -2,7 +2,7 @@
 
 /* See board positions at the bottom! */
 
-namespace MadEngine
+namespace Ludo.GameLogic
 {
     public struct BoardInfo
     {
@@ -36,8 +36,19 @@ namespace MadEngine
             => Length + player * EndZoneLength;
 
         // checks if the distance of a piece corresponds to one of the collision-free end-zones (goal square exclusive).
-        public bool IsInEndZone(int pieceDistance)
-            => pieceDistance > Length && pieceDistance < GoalDistance;
+        public bool IsInEndZone(int distance)
+            => distance > Length && distance < GoalDistance;
+
+        // checks if a position corresponds to a board square.
+        public bool IsValidPosition(int position)
+            => position >= 0 && position < GoalPosition(3)
+            && position != GoalPosition(0) 
+            && position != GoalPosition(1)
+            && position != GoalPosition(2);
+
+        // these positions are reserved but not currently used - they are not considered valid positions! (Base and Goal have position == -1)
+        internal int GoalPosition(int player)
+            => Length + (player + 1) * EndZoneLength - 1;
     }
 }
 /*

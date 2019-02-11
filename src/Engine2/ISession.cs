@@ -1,9 +1,29 @@
 ﻿using System;
 
-namespace MadEngine
+namespace Ludo.GameLogic
 {
     public interface ISession
     {
+        // A new turn has begun. (Informational: Not accepting input.)
+        event EventHandler TurnBegun;
+        // The CurrentPlayer is passing their turn. (Turn has not passed yet!) (Informational: Not accepting input.)
+        event EventHandler PassingTurn;
+        // The CurrentPlayer is moving a piece. (The piece has not moved yet!) (Informational: Not accepting input.)
+        event EventHandler<MovingPieceEventArgs> MovingPiece;
+        // A piece has been knocked out by another piece (and thus moved back to its base). (Informational: Not accepting input.)
+        //event EventHandler<TODO> PieceKnockedOut;
+        // A player has won the game! (Informational: Not accepting input.)
+        event EventHandler WinnerDeclared;
+
+        // Calling MovePiece and PassTurn is only valid while this is true.
+        bool IsAcceptingInput { get; }
+        // Started accepting input. (Useful for implementing bots!)
+        // IMPORTANT: Remaining subscribers are NOT invoked if an invoked subscriber supplies input.
+        event EventHandler AcceptingInput;
+
+        // The current turn number (i.e. a counter for how many times the die has been rolled).
+        int TurnCounter { get; }
+
         // The current player.
         int CurrentPlayer { get; }
         // The current die roll.
@@ -33,8 +53,6 @@ namespace MadEngine
         PieceInfo GetPiece(int piece);
         // Move piece [0-3] for the current player (and proceed to the next turn / roll die).
         void MovePiece(int piece);
-        // Moves a piece out from the current players base (and proceed to the next turn / roll die).
-        void MoveBasePiece();
         // Call this to pass the turn to the next player, or if lucky, simply re-roll the die.
         void PassTurn();
 

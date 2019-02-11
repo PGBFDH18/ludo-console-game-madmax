@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MadEngine
+namespace Ludo.GameLogic
 {
     public struct PieceInfo
     {

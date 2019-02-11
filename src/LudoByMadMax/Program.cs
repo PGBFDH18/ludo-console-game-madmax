@@ -1,8 +1,10 @@
 ﻿using System;
-using MadEngine;
+using Ludo.Bots;
+using Ludo.GameLogic;
 
 namespace LudoByMadMax
 {
+    // This has grown into a huge mess in need of refactoring...
     class Program
     {
         static void Main(string[] args)
@@ -21,45 +23,105 @@ namespace LudoByMadMax
 
         static void NewGame()
         {
-            int numOfPlayers = GetPlayerCountFromConsole();
-            string[] players = new string[numOfPlayers];
-            PopulatePlayerNamesFromConsole(players);
+            GetPlayerCountsFromConsole(out int humanCount, out int botCount);
+            int playerCount = humanCount + botCount;
+            string[] players = new string[playerCount];
+            GetHumanPlayerNamesFromConsole(players, humanCount);
 
             Console.WriteLine();
-            Console.WriteLine("Great! Let's start.");
-            var session = Ludo.NewGame(numOfPlayers);
+            Console.WriteLine("Creating game session...");
+            var rules = new Rules(allowGoalBouncing: false, allowBaseExitOnRoll1: true); // <--- TODO
+            var session = SessionFactory.New(playerCount, rules);
+
+            var bots = new LudoBot[botCount];
+            if (botCount != 0)
+            {
+                Console.WriteLine("Creating bots...");
+                CreateAndNameBots(session, players, bots);
+            }
+
             Console.WriteLine(players[session.CurrentPlayer]
                 + " has been randomly choosen as the starting player!");
+            Console.WriteLine();
 
-            RunGameLoop(session, players);
+            var observer = botCount == 0 ? null : new BotObserver(session, players, humanCount, true);
+            foreach (var bot in bots)
+                bot.TryMakeMove();
+
+            RunGameLoop(session, players, humanCount);
 
             Console.WriteLine();
             Console.WriteLine("\t(Game has ended)");
+
+            observer?.Dispose();
+            foreach (var bot in bots)
+                bot.Dispose();
         }
 
-        static int GetPlayerCountFromConsole()
+        static void GetPlayerCountsFromConsole(out int humans, out int bots)
         {
             while(true) // infinite retry...
             {
-                Console.Write("Choose number of players: ");
-                if (!int.TryParse(Console.ReadLine(), out int playerCount))
-                    Console.WriteLine("You can only use numbers. Try again!");
-                else if (playerCount < 2 || playerCount > 4)
-                    Console.WriteLine("Game supports 2-4 players. Try again!");
+                Console.Write("Choose number of human players: ");
+                if (!int.TryParse(Console.ReadLine(), out humans) || humans < 1)
+                    Console.WriteLine("You can only use positive numbers. Try again!");
+                else if (humans > 4)
+                    Console.WriteLine("Game supports max 4 players. Try again!");
                 else
-                    return playerCount;
+                    break;
             }
+            if (humans == 4)
+            {
+                bots = 0;
+                return;
+            }
+            bool invalid;
+            do
+            {
+                invalid = false;
+                Console.Write("Choose number of bots: ");
+                var line = Console.ReadLine();
+                if (string.IsNullOrEmpty(line))
+                    bots = 0;
+                else if (invalid = (!int.TryParse(line, out bots) || bots < 0))
+                    Console.WriteLine("You can only use non-negative numbers. Try again!");
+                else if (invalid = (bots > 4 - humans))
+                    Console.WriteLine($"Game supports max 4 players, so there is room for max {4 - humans} bots. Try again!");
+                if (invalid |= (humans == 1 && bots == 0))
+                    Console.WriteLine("Game requires at least 2 players. Try again!");
+            }
+            while (invalid);
         }
 
         // loop through the string array, overwriting its contents with input from console.
-        static void PopulatePlayerNamesFromConsole(string[] playerNames)
+        static void GetHumanPlayerNamesFromConsole(string[] playerNames, int humans)
         {
-            for (int i = 0; i < playerNames.Length; i++)
+            for (int i = 0; i < humans; i++)
             {
                 Console.Write($"Enter the name of Player {i + 1}: ");
                 string name = Console.ReadLine();
                 playerNames[i] = string.IsNullOrWhiteSpace(name) ? $"Player{i + 1}" : name;
             }
+        }
+
+        static void CreateAndNameBots(ISession session, string[] players, LudoBot[] bots)
+        {
+            int humanCount = players.Length - bots.Length;
+            for (int i = 0; i < bots.Length; ++i)
+            {
+                var bot = CreateRandomBot();
+                bots[i] = bot;
+                int playerIndex = humanCount + i;
+                players[playerIndex] = bot.StaticName + $" ({i})";
+                bot.Register(session, playerIndex, false);
+            }
+        }
+
+        static LudoBot CreateRandomBot()
+        {
+            // if more bot implementations are made, add them here and pick one at random...
+            return new RngesusBot();
+            // right now we only have one bot implementation, but the method name fits anyway :P
         }
 
         static bool QuitConfirm(ConsoleKey key)
@@ -82,16 +144,18 @@ namespace LudoByMadMax
         }
 
         // runs until a winner has been crowned.
-        static void RunGameLoop(ISession session, string[] players)
+        static void RunGameLoop(ISession session, string[] players, int humans)
         {
             var bi = session.BoardInfo;
             float goalDist = bi.GoalDistance;
             bool wasLucky = false;
             do
             {
+                //if (!IsHuman())
+                //    continue;
                 Console.WriteLine();
                 PrintRollDie();
-                PrintPieceCounts();
+                PrintPieceCounts(session);
                 PrintNonBasePieces();
                 if (!session.CanMove)
                 {
@@ -146,7 +210,7 @@ namespace LudoByMadMax
                     {
                         Console.Write($"\t{i+1} - piece move");
                         if (p.Collision is PlayerPiece mc)
-                            Console.WriteLine($", knocking out {players[session.CurrentPlayer]}!");
+                            Console.WriteLine($", knocking out {players[mc.Player]}!");
                         else
                             Console.WriteLine(".");
                     }
@@ -178,8 +242,8 @@ namespace LudoByMadMax
                 }
                 if (key.Key == ConsoleKey.B && baseIndex != -1)
                 {
+                    Console.WriteLine($"Piece #{baseIndex + 1} is moved out from your base.");
                     session.MovePiece(baseIndex);
-                    Console.WriteLine($"Piece #{baseIndex + 1} was moved out from your base.");
                     return true;
                 }
                 if (key.Key == ConsoleKey.S)
@@ -200,9 +264,9 @@ namespace LudoByMadMax
                     if (p.CanMove && !p.IsInBase)
                     {
                         int dist = session.CurrentDieRoll;
+                        Console.WriteLine($"Piece #{piece} is moved {dist} steps.");
+                        PrintCollResult(session, players, piece);
                         session.MovePiece(piece - 1);
-                        Console.WriteLine($"Piece #{piece} was moved {dist} steps.");
-                        PrintCollResult(piece);
                         return true;
                     }
                 }
@@ -218,14 +282,6 @@ namespace LudoByMadMax
                 Console.ReadKey(true);
                 Console.WriteLine($"You rolled a {session.CurrentDieRoll}" +
                     (wasLucky ? "!" : "."));
-            }
-
-            void PrintPieceCounts()
-            {
-                if (session.InBaseCount == session.PieceCount - session.InGoalCount)
-                    Console.WriteLine("All your playable pieces are currently in your base.");
-                else
-                    Console.WriteLine($"Pieces in base: {session.InBaseCount} - Pieces in goal: {session.InGoalCount}");
             }
 
             void PrintNonBasePieces()
@@ -272,21 +328,6 @@ namespace LudoByMadMax
                     Console.WriteLine($"\tThere it collides with {players[mc.Player]} #{mc.Piece + 1} piece.");
             }
 
-            void PrintCollResult(int piece)
-            {
-                if (session.GetPiece(piece).Collision is PlayerPiece mc)
-                {
-                    if (mc.Player == session.CurrentPlayer) // stacking!
-                    {
-                        throw new NotImplementedException("stacking not supported by UI");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"{players[mc.Player]}'s #{mc.Piece + 1} piece was knocked out / moved back to base!");
-                    }
-                }
-            }
-
             void PrintBlock(in PieceInfo p)
             {
                 if (p.Collision is PlayerPiece mc)
@@ -309,7 +350,30 @@ namespace LudoByMadMax
                     Console.WriteLine("Hit a key to pass. (Or Q to quit)");
                     if (quit = QuitConfirm(Console.ReadKey(true).Key))
                         return;
-                    Console.WriteLine();
+                    //Console.WriteLine();
+                }
+            }
+        }
+
+        internal static void PrintPieceCounts(ISession session)
+        {
+            if (session.InBaseCount == session.PieceCount - session.InGoalCount)
+                Console.WriteLine("All your playable pieces are currently in your base.");
+            else
+                Console.WriteLine($"Pieces in base: {session.InBaseCount} - Pieces in goal: {session.InGoalCount}");
+        }
+
+        internal static void PrintCollResult(ISession session, string[] players, int piece)
+        {
+            if (session.GetPiece(piece).Collision is PlayerPiece mc)
+            {
+                if (mc.Player == session.CurrentPlayer) // stacking!
+                {
+                    throw new NotImplementedException("stacking not supported by UI");
+                }
+                else
+                {
+                    Console.WriteLine($"{players[mc.Player]}'s #{mc.Piece + 1} piece was knocked out / moved back to base!");
                 }
             }
         }
